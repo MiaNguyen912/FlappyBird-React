@@ -18,6 +18,7 @@ const App = () => {
     const [upperObstacleHeight, setUpperObstacleHeight] = useState(400);
     const [obstacleLeft, setObstacleLeft] = useState(window.innerWidth - OBSTACLE_WIDTH)
     const [score, setScore] = useState(0)
+    const [headUp, setHeadUp] = useState(false)
 
     let bottomObstacleHeight = (upperObstacleHeight-OBSTACLE_GAP);
     //----------------------------
@@ -93,7 +94,11 @@ const App = () => {
     // }, [birdHeight])
     
     function handleJump(){
-        let jump;
+        setHeadUp(true);
+        setTimeout(()=>{
+            setHeadUp(false)
+        }, 100)
+        let jump; 
         if(score <= 5) jump = JUMP_HEIGHT;
         else if (score <= 10) jump = JUMP_HEIGHT + 5;
         else if (score <= 20) jump = JUMP_HEIGHT + 10;
@@ -102,7 +107,7 @@ const App = () => {
         let newHeight = birdHeight+jump;
         if (!isStarted) setStart(true)
         else if (newHeight > GAME_SIZE) setBirdHeight(GAME_SIZE);
-        else if (newHeight >= upperObstacleHeight) setBirdHeight(upperObstacleHeight);
+        else if (obstacleLeft<=(BIRD_SIZE*2) && newHeight >= upperObstacleHeight) setBirdHeight(upperObstacleHeight);
         else setBirdHeight(newHeight);
     }
     //----------------------------
@@ -110,7 +115,6 @@ const App = () => {
     return (
         <Div onKeyDown={handleJump} tabIndex={0}>
             <span style={{color: "white", position: "absolute", fontSize: "24px", top: "10px"}}>{score}</span>
-
             <GameBox size={GAME_SIZE}>
                 <Obstacle  //top
                     top={0}
@@ -130,6 +134,7 @@ const App = () => {
                     size={BIRD_SIZE} 
                     src={bird_img}
                     top={GAME_SIZE-birdHeight}
+                    headUp={headUp}
                 />
             </GameBox>
         </Div>    
@@ -146,6 +151,7 @@ const Bird = styled.img` //create Bird component that'll render a <img> tag with
     width: ${(props)=> props.size*2}px;
     top: ${props => props.top}px;
     border-radius: 50%;
+    transform: rotate(${props => props.headUp && -25}deg);
 `
 const Div = styled.div`
     display: flex;
@@ -170,7 +176,5 @@ const Obstacle = styled.div`
     height: ${props => props.length}px;
     left: ${props => props.left}px;
     transform: rotate(${props => props.flip && 180}deg);
-    // transform: rotateY(${props => props.flip && 180}deg);
-
     background-repeat: no-repeat;
 `
