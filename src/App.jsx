@@ -37,17 +37,22 @@ const App = () => {
 
     useEffect(()=>{  //obstacle move automatically
         let obstacleId;
+        let goLeft;
+        if(score <=5) goLeft = 5;
+        else if (score <= 10) goLeft = 7.5;
+        else goLeft = 10;
+
         if(isStarted){
             if (obstacleLeft >= -OBSTACLE_WIDTH){
                 obstacleId = setInterval(()=>{
-                    setObstacleLeft(obstacleLeft=> obstacleLeft-5)
+                    setObstacleLeft(obstacleLeft=> obstacleLeft-goLeft)
                 },10)
                 return ()=>{
                     clearInterval(obstacleId)
                 }
             }
             else {
-                setObstacleLeft(window.innerWidth - OBSTACLE_WIDTH)
+                setObstacleLeft(window.innerWidth)
                 setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP))); //Math.random() = 0->0.999
                 setScore(score => score + 1)
             }
@@ -88,7 +93,13 @@ const App = () => {
     // }, [birdHeight])
     
     function handleJump(){
-        let newHeight = birdHeight+JUMP_HEIGHT;
+        let jump;
+        if(score <= 5) jump = JUMP_HEIGHT;
+        else if (score <= 10) jump = JUMP_HEIGHT + 5;
+        else if (score <= 20) jump = JUMP_HEIGHT + 10;
+        else jump = JUMP_HEIGHT + 15;
+
+        let newHeight = birdHeight+jump;
         if (!isStarted) setStart(true)
         else if (newHeight > GAME_SIZE) setBirdHeight(GAME_SIZE);
         else if (newHeight >= upperObstacleHeight) setBirdHeight(upperObstacleHeight);
@@ -145,6 +156,7 @@ const Div = styled.div`
 const GameBox = styled.div`
     height: ${(props)=>props.size}px;
     width: 100%;
+    // min-width: ${(props)=>props.size}px;
     background-image: url(${background_img});
     background-repeat: repeat-x; //only repreat horizontally
     overflow: hidden
