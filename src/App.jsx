@@ -9,7 +9,7 @@ const GAME_SIZE = 600;
 const GROUND_HEIGHT = 80;
 const GRAVITY = 6;
 const JUMP_HEIGHT = 75;
-const OBSTACLE_WIDTH = 100;
+const OBSTACLE_WIDTH = 246;
 const OBSTACLE_GAP = 200;
 
 const App = () => {
@@ -154,9 +154,11 @@ const Obstacle = styled.div`
     position: relative;
     top: ${props => props.top}px;
     background-image: url(${pipe_img});
-    // max-width: 100%;
     width: ${props => props.width}px;
     height: ${props => props.length}px;
     left: ${props => props.left}px;
-    transform: rotate(${props => props.flip && 180}deg)
+    transform: rotate(${props => props.flip && 180}deg);
+    // transform: rotateY(${props => props.flip && 180}deg);
+
+    background-repeat: no-repeat;
 `
