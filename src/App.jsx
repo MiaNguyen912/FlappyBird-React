@@ -13,20 +13,20 @@ const OBSTACLE_WIDTH = 100;
 const OBSTACLE_GAP = 200;
 
 const App = () => {
-    const [birdHeight, setBirdHeight] = useState(250); //position of top of bird
+    const [birdHeight, setBirdHeight] = useState(350); //position of top of bird
     const [isStarted, setStart] = useState(false);
-    const [upperObstacleHeight, setUpperObstacleHeight] = useState(200);
+    const [upperObstacleHeight, setUpperObstacleHeight] = useState(400);
     const [obstacleLeft, setObstacleLeft] = useState(window.innerWidth - OBSTACLE_WIDTH)
     const [score, setScore] = useState(0)
 
-    let bottomObstacleHeight = GAME_SIZE-GROUND_HEIGHT-OBSTACLE_GAP-upperObstacleHeight;
-
+    let bottomObstacleHeight = (upperObstacleHeight-OBSTACLE_GAP);
+    //----------------------------
 
     useEffect(()=>{  //bird fall automatially
         let timeId;
-        if(isStarted && birdHeight< GAME_SIZE - GROUND_HEIGHT - BIRD_SIZE){ //if not touch the ground
+        if(isStarted && birdHeight>  (GROUND_HEIGHT + BIRD_SIZE)){ //if not touch the ground
             timeId = setInterval(()=>{
-                setBirdHeight(prevHeight => prevHeight + GRAVITY) //decrease height of bird
+                setBirdHeight(prevHeight => prevHeight - GRAVITY) //decrease height of bird
             },25)
             return ()=>{
                 clearInterval(timeId);
@@ -48,61 +48,77 @@ const App = () => {
             }
             else {
                 setObstacleLeft(window.innerWidth - OBSTACLE_WIDTH)
-                setUpperObstacleHeight(Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP)));
+                setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP))); //Math.random() = 0->0.999
                 setScore(score => score + 1)
             }
         }
         else {
             setObstacleLeft(window.innerWidth - OBSTACLE_WIDTH)
-                setUpperObstacleHeight(Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP)));
+            setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP))); //height = GAME_SIZE - length
         }
     }, [isStarted, obstacleLeft])
 
     useEffect(()=>{  //catch collision automatically
-        const touchGround = birdHeight >= (GAME_SIZE - GROUND_HEIGHT - BIRD_SIZE)
-        const touchTop = birdHeight >= 0 && birdHeight <= upperObstacleHeight;
-        const touchBottom = birdHeight <= (GAME_SIZE - GROUND_HEIGHT) && birdHeight >= (GAME_SIZE - GROUND_HEIGHT - bottomObstacleHeight);
-        if (obstacleLeft <= (BIRD_SIZE*2)){ //bird width = BIRD_SIZE*2
-            if (touchGround || touchTop || touchBottom){
-                setStart(false)
-                alert("Score: " + score)
-                setScore(0)
+        const touchGround = birdHeight <= (GROUND_HEIGHT + BIRD_SIZE)
+        const touchTop = birdHeight >= upperObstacleHeight;
+        const touchBottom = birdHeight <= (bottomObstacleHeight+BIRD_SIZE);
+
+        if (touchGround ||   (obstacleLeft<=(BIRD_SIZE*2) && (touchTop||touchBottom))){
+        //bird width = BIRD_SIZE*2
+            if (touchTop){
+                setTimeout(()=>{
+                    setStart(false)
+                    alert("Score: " + score)
+                    setScore(0)
+                    setBirdHeight(350)
+                },50)
             }
-
+            else{
+                alert("Score: " + score)
+                setStart(false)
+                setScore(0)
+                setBirdHeight(350)
+            }
         }
-    }, [birdHeight, upperObstacleHeight, bottomObstacleHeight, obstacleLeft])
+    }, [birdHeight])
 
+    // useEffect(()=>{
+    //     const touchTop = birdHeight >= upperObstacleHeight;
+    //     if (touchTop) setBirdHeight(upperObstacleHeight)
+    // }, [birdHeight])
     
     function handleJump(){
-        let newHeight = birdHeight-JUMP_HEIGHT;
+        let newHeight = birdHeight+JUMP_HEIGHT;
         if (!isStarted) setStart(true)
-        else if (newHeight < 0) setBirdHeight(0);
+        else if (newHeight > GAME_SIZE) setBirdHeight(GAME_SIZE);
+        else if (newHeight >= upperObstacleHeight) setBirdHeight(upperObstacleHeight);
         else setBirdHeight(newHeight);
     }
+    //----------------------------
 
     return (
         <Div onKeyDown={handleJump} tabIndex={0}>
             <span style={{color: "white", position: "absolute", fontSize: "24px", top: "10px"}}>{score}</span>
 
             <GameBox size={GAME_SIZE}>
-                <Obstacle 
+                <Obstacle  //top
                     top={0}
                     width={OBSTACLE_WIDTH}
-                    height={upperObstacleHeight}
+                    length={GAME_SIZE - upperObstacleHeight}
                     left={obstacleLeft}
                     flip={true}
                 />
-                <Obstacle 
-                    top={GAME_SIZE  - upperObstacleHeight - GROUND_HEIGHT - bottomObstacleHeight}
+                <Obstacle  //bottom
+                    top={GAME_SIZE - bottomObstacleHeight - (GAME_SIZE-upperObstacleHeight)} //length of upper pipe = (GAME_SIZE-upperObstacleHeight)
                     width={OBSTACLE_WIDTH}
-                    height={bottomObstacleHeight + 10}
+                    length={bottomObstacleHeight - GROUND_HEIGHT +10}
                     left={obstacleLeft}
                     flip={false}
                 />
                 <Bird 
                     size={BIRD_SIZE} 
                     src={bird_img}
-                    top={birdHeight}
+                    top={GAME_SIZE-birdHeight}
                 />
             </GameBox>
         </Div>    
@@ -140,7 +156,7 @@ const Obstacle = styled.div`
     background-image: url(${pipe_img});
     // max-width: 100%;
     width: ${props => props.width}px;
-    height: ${props => props.height}px;
+    height: ${props => props.length}px;
     left: ${props => props.left}px;
     transform: rotate(${props => props.flip && 180}deg)
 `
