@@ -25,7 +25,7 @@ const App = () => {
 
     useEffect(()=>{  //bird fall automatially
         let timeId;
-        if(isStarted && birdHeight>  (GROUND_HEIGHT + BIRD_SIZE)){ //if not touch the ground
+        if(isStarted && birdHeight >  (GROUND_HEIGHT + BIRD_SIZE)){ //if not touch the ground
             timeId = setInterval(()=>{
                 setBirdHeight(prevHeight => prevHeight - GRAVITY) //decrease height of bird
             },25)
@@ -44,7 +44,7 @@ const App = () => {
         else goLeft = 10;
 
         if(isStarted){
-            if (obstacleLeft >= -OBSTACLE_WIDTH){
+            if (obstacleLeft >= -OBSTACLE_WIDTH){ //pipes haven't go out of screen
                 obstacleId = setInterval(()=>{
                     setObstacleLeft(obstacleLeft=> obstacleLeft-goLeft)
                 },10)
@@ -54,15 +54,15 @@ const App = () => {
             }
             else {
                 setObstacleLeft(window.innerWidth)
-                setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP))); //Math.random() = 0->0.999
+                setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - GROUND_HEIGHT - OBSTACLE_GAP))); //Math.random() = 0->0.999
                 setScore(score => score + 1)
             }
         }
         else {
             setObstacleLeft(window.innerWidth - OBSTACLE_WIDTH)
-            setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - OBSTACLE_GAP))); //height = GAME_SIZE - length
+            setUpperObstacleHeight(GAME_SIZE - Math.floor(Math.random() * (GAME_SIZE - GROUND_HEIGHT - OBSTACLE_GAP))); //height = GAME_SIZE - length
         }
-    }, [isStarted, obstacleLeft])
+    }, [isStarted, obstacleLeft, score])
 
     useEffect(()=>{  //catch collision automatically
         const touchGround = birdHeight <= (GROUND_HEIGHT + BIRD_SIZE)
@@ -86,7 +86,7 @@ const App = () => {
                 setBirdHeight(350)
             }
         }
-    }, [birdHeight])
+    }, [birdHeight, bottomObstacleHeight, upperObstacleHeight, obstacleLeft, score])
 
     // useEffect(()=>{
     //     const touchTop = birdHeight >= upperObstacleHeight;
