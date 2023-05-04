@@ -1,11 +1,11 @@
 {
   "files": {
-    "main.js": "/FlappyBird-React/static/js/main.c5c35267.js",
+    "main.js": "/FlappyBird-React/static/js/main.7a3aba6c.js",
     "static/media/sky.png": "/FlappyBird-React/static/media/sky.1e72af29c11283c0920e.png",
     "index.html": "/FlappyBird-React/index.html",
-    "main.c5c35267.js.map": "/FlappyBird-React/static/js/main.c5c35267.js.map"
+    "main.7a3aba6c.js.map": "/FlappyBird-React/static/js/main.7a3aba6c.js.map"
   },
   "entrypoints": [
-    "static/js/main.c5c35267.js"
+    "static/js/main.7a3aba6c.js"
   ]
 }
