@@ -113,7 +113,7 @@ const App = () => {
     //----------------------------
 
     return (
-        <Div onKeyDown={handleJump} tabIndex={0}>
+        <Div onKeyDown={handleJump} tabIndex={0} onTouchStart={handleJump}>
             <span style={{color: "white", position: "absolute", fontSize: "24px", top: "10px"}}>{score}</span>
             <GameBox size={GAME_SIZE}>
                 <Obstacle  //top
